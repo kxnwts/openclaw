@@ -35,6 +35,11 @@ function ensureSymlink(targetValue, targetPath, type) {
 }
 
 function symlinkPath(sourcePath, targetPath, type) {
+  // On Windows, use copy instead of symlink to avoid EPERM errors
+  if (process.platform === "win32") {
+    fs.copyFileSync(sourcePath, targetPath);
+    return;
+  }
   ensureSymlink(relativeSymlinkTarget(sourcePath, targetPath), targetPath, type);
 }
 
@@ -111,6 +116,11 @@ function linkPluginNodeModules(params) {
   const runtimeNodeModulesDir = path.join(params.runtimePluginDir, "node_modules");
   removePathIfExists(runtimeNodeModulesDir);
   if (!fs.existsSync(params.sourcePluginNodeModulesDir)) {
+    return;
+  }
+  // On Windows, use junction for directories (works without admin)
+  if (process.platform === "win32") {
+    ensureSymlink(params.sourcePluginNodeModulesDir, runtimeNodeModulesDir, "junction");
     return;
   }
   ensureSymlink(params.sourcePluginNodeModulesDir, runtimeNodeModulesDir, symlinkType());

@@ -9,8 +9,8 @@ import {
   isSupportedLocalAvatarExtension,
 } from "../shared/avatar-policy.js";
 import { resolveUserPath } from "../utils.js";
-import { resolveAgentWorkspaceDir } from "./agent-scope.js";
-import { loadAgentIdentityFromWorkspace } from "./identity-file.js";
+import { resolveAgentWorkspaceDir, resolveAgentDir } from "./agent-scope.js";
+import { loadAgentIdentity } from "./identity-file.js";
 import { resolveAgentIdentity } from "./identity.js";
 
 export type AgentAvatarResolution =
@@ -29,8 +29,9 @@ function resolveAvatarSource(cfg: OpenClawConfig, agentId: string): string | nul
   if (fromConfig) {
     return fromConfig;
   }
+  const agentDir = resolveAgentDir(cfg, agentId);
   const workspace = resolveAgentWorkspaceDir(cfg, agentId);
-  const fromIdentity = normalizeAvatarValue(loadAgentIdentityFromWorkspace(workspace)?.avatar);
+  const fromIdentity = normalizeAvatarValue(loadAgentIdentity(agentDir, workspace)?.avatar);
   return fromIdentity;
 }
 

@@ -7,7 +7,7 @@ import {
 import type { AgentIdentityFile } from "../agents/identity-file.js";
 import {
   identityHasValues,
-  loadAgentIdentityFromWorkspace,
+  loadAgentIdentity,
   parseIdentityMarkdown as parseIdentityMarkdownFile,
 } from "../agents/identity-file.js";
 import { listRouteBindings } from "../config/bindings.js";
@@ -73,6 +73,17 @@ export function parseIdentityMarkdown(content: string): AgentIdentity {
   return parseIdentityMarkdownFile(content);
 }
 
+export function loadAgentIdentityFromAgentDir(agentDir: string, workspace?: string): AgentIdentity | null {
+  const parsed = loadAgentIdentity(agentDir, workspace);
+  if (!parsed) {
+    return null;
+  }
+  return identityHasValues(parsed) ? parsed : null;
+}
+
+/**
+ * @deprecated Use loadAgentIdentityFromAgentDir(agentDir, workspace) instead.
+ */
 export function loadAgentIdentity(workspace: string): AgentIdentity | null {
   const parsed = loadAgentIdentityFromWorkspace(workspace);
   if (!parsed) {
@@ -97,8 +108,9 @@ export function buildAgentSummaries(cfg: OpenClawConfig): AgentSummary[] {
   const ordered = orderedIds.filter((id, index) => orderedIds.indexOf(id) === index);
 
   return ordered.map((id) => {
+    const agentDir = resolveAgentDir(cfg, id);
     const workspace = resolveAgentWorkspaceDir(cfg, id);
-    const identity = loadAgentIdentity(workspace);
+    const identity = loadAgentIdentityFromAgentDir(agentDir, workspace);
     const configIdentity = configuredAgents.find(
       (agent) => normalizeAgentId(agent.id) === id,
     )?.identity;
