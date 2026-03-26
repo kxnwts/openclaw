@@ -86,9 +86,6 @@ apps/ios/*.mobileprovision
 .local/
 docs/.local/
 tmp/
-# Agent identity - tracked for persistence (exceptions to ignore patterns)
-# IDENTITY.md
-# USER.md
 .tgz
 .idea
 
@@ -96,7 +93,6 @@ tmp/
 .serena/
 
 # Agent credentials and memory (NEVER COMMIT)
-/memory/
 .agent/*.json
 !.agent/workflows/
 /local/
@@ -104,6 +100,14 @@ package-lock.json
 .claude/
 .agent/
 skills-lock.json
+
+# Workspace identity files (Git-tracked for persistence)
+# workspace/IDENTITY.md - TRACKED
+# workspace/USER.md - TRACKED
+# workspace/SOUL.md - TRACKED
+# workspace/MEMORY.md - TRACKED
+# workspace/memory/ - DAILY LOGS (NOT TRACKED)
+workspace/memory/
 
 # Local iOS signing overrides
 apps/ios/LocalSigning.xcconfig
